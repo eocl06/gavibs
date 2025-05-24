@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="tr-TR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ramazan Ayında Mide Yanmasının Önüne Geçin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fefefe;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #4FA8A2; /* Gavidigest Mavi-Yeşil */
+      --accent-bg: #E0F2F1; /* Gavidigest Açık Mavi-Yeşil */
+      --font: 'Roboto', sans-serif;
+      --carousel-accent-light: #E0F2F1; /* Carousel için açık arka plan */
+      --carousel-text: #1f2937;
+      --carousel-radius: 12px;
+      --correct-answer-bg: #d4edda; /* Açık Yeşil - Doğru Cevap */
+      --correct-answer-border: #c3e6cb;
+      --incorrect-answer-bg: #f8d7da; /* Açık Kırmızı - Yanlış Cevap */
+      --incorrect-answer-border: #f5c6cb;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 0;
+      background: linear-gradient(to right, #A7D7D3, var(--accent)); /* Yeni renklere uygun gradient */
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(79, 168, 162, 0.3);
+      z-index: 1001;
+      transition: width 0.25s ease-out;
+    }
+    .container {
+      max-width: 680px;
+      margin: 20px auto;
+      padding: 24px 24px 32px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    h1, h2 {
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 2.25rem;
+      font-family: 'Playfair Display', serif;
+      color: var(--text);
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 48px;
+      font-family: 'Playfair Display', serif;
+      color: var(--text);
+    }
+    p {
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+    p strong { /* Genel strong için */
+      color: var(--text);
+      font-weight: 600;
+    }
+    .highlighted-benefit {
+        background-color: var(--accent-bg);
+        color: #3E847E; /* Vurgu arka planı üzerinde koyu vurgu rengi */
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    ul {
+      margin-bottom: 20px;
+      padding-left: 20px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+    ul li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .image-block {
+      margin: 32px 0;
+    }
+    .image-block img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    .caption {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #9ca3af;
+      margin-top: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    .button {
+      background-color: var(--accent);
+      color: white;
+      padding: 12px 32px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(79, 168, 162, 0.2); /* Yeni renge uygun gölge */
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .button:hover {
+      background-color: #3E847E; /* Vurgu renginin koyu tonu */
+    }
+
+    .carousel {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: var(--carousel-radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin: 32px 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .carousel-inner {
+      display: flex;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      cursor: grab;
+    }
+    .carousel-inner.is-dragging {
+      cursor: grabbing;
+    }
+    .carousel-slide {
+      min-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .carousel-slide img {
+      width: 100%;
+      height: 350px; /* Yüksekliği sabitledim, orantı için object-fit: cover */
+      object-fit: cover;
+      display: block;
+      border-radius: 0;
+      pointer-events: none;
+    }
+    .carousel-slide .caption {
+      padding: 12px 16px 35px 16px;
+      background-color: var(--carousel-accent-light);
+      color: var(--carousel-text);
+      font-size: 0.95rem; /* Biraz küçülttüm */
+      width: 100%;
+      text-align: center;
+      border-radius: 0 0 var(--carousel-radius) var(--carousel-radius);
+      margin-top: 0;
+      position: relative;
+      z-index: 1;
+      font-family: 'Inter', sans-serif;
+      min-height: 100px; /* Caption alanı için minimum yükseklik */
+    }
+    .carousel-controls {
+      position: absolute;
+      top: calc(350px / 2); /* Resim yüksekliğinin ortası */
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      padding: 0 15px;
+      pointer-events: none;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .carousel:hover .carousel-controls {
+        opacity: 1;
+      }
+    }
+    .carousel-controls.mobile-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .carousel-controls.mobile-visible button {
+        pointer-events: all;
+    }
+    .carousel-controls button {
+      pointer-events: all;
+      background: rgba(0, 0, 0, 0.15);
+      color: rgba(255, 255, 255, 0.85);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      box-shadow: none;
+    }
+    .carousel-controls button:hover {
+      background: rgba(0, 0, 0, 0.35);
+      color: #fff;
+      transform: scale(1.1);
+    }
+    .carousel-dots {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 2;
+      padding: 8px 0;
+    }
+    .carousel-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 4px;
+      background-color: rgba(0, 0, 0, 0.35);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .carousel-dot:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+      transform: scale(1.1);
+    }
+    .carousel-dot.active {
+      background-color: var(--accent);
+      transform: scale(1.2);
+    }
+
+    /* ANKET STİLLERİ */
+    .survey-container {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: var(--carousel-radius);
+      padding: 35px 25px 30px 25px;
+      margin: 48px 0;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+    .survey-sponsor {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+    }
+    .survey-sponsor img {
+      max-width: 60px; /* Küçültülen logo boyutu */
+      height: auto;
+      display: block;
+    }
+    .survey-container h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      color: var(--text);
+      font-weight: 700;
+      position: relative;
+      padding-bottom: 12px;
+      margin-top: 0;
+      margin-bottom: 25px;
+    }
+    .survey-container h3::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 3px;
+      background-color: var(--accent);
+      border-radius: 1.5px;
+      margin: 0 auto;
+    }
+    .survey-question {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      color: var(--muted);
+      margin-bottom: 30px;
+      line-height: 1.65;
+    }
+    .survey-options {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 520px; /* Biraz genişlettim */
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .survey-options li button {
+      display: block;
+      width: 100%;
+      padding: 15px 20px;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.95rem; /* Biraz küçülttüm */
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .survey-options li button:hover:not(:disabled) {
+      background-color: var(--accent-bg);
+      border-color: var(--accent);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.06);
+    }
+    .survey-options li button.selected.correct {
+        background-color: var(--correct-answer-bg);
+        border-color: var(--correct-answer-border);
+        color: #155724; /* Koyu yeşil yazı */
+    }
+    .survey-options li button.selected.incorrect {
+        background-color: var(--incorrect-answer-bg);
+        border-color: var(--incorrect-answer-border);
+        color: #721c24; /* Koyu kırmızı yazı */
+    }
+    .survey-options li button:disabled:not(.selected) {
+      opacity: 0.6;
+      background-color: #f0f0f0;
+      border-color: #e0e0e0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+     .survey-options li button.selected:disabled { /* Seçildikten sonraki genel pasif stil */
+        opacity: 1;
+        cursor: default;
+    }
+    .survey-feedback-message {
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: var(--muted);
+    }
+
+    /* YOUTUBE STİLLERİ (ESKİ) */
+    .youtube-embed-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        margin: 40px auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .youtube-embed-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    /* AKICI CTA BÖLÜMÜ STİLLERİ */
+    .integrated-cta-section {
+      text-align: center;
+      margin: 40px auto 20px auto;
+      padding: 25px 0;
+      position: relative;
+    }
+    .integrated-cta-section::before {
+      content: '';
+      display: block;
+      width: 70px;
+      height: 2.5px;
+      background-color: var(--accent);
+      opacity: 0.6;
+      margin: 0 auto 30px auto;
+      border-radius: 1px;
+    }
+    .integrated-cta-section .cta-final-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.18rem;
+      line-height: 1.85;
+      color: var(--text);
+      margin-bottom: 30px;
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .integrated-cta-section .cta-final-text strong {
+      color: var(--accent); /* CTA metnindeki strong da yeni renkte */
+      font-weight: 600;
+    }
+    .integrated-cta-section .button {
+      padding: 14px 40px;
+      font-size: 1.05rem;
+    }
+    .source-info {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 20px;
+        line-height: 1.5;
+    }
+    .source-info a {
+        color: var(--accent); /* Kaynak linkleri de yeni renkte */
+        text-decoration: none;
+    }
+    .source-info a:hover {
+        text-decoration: underline;
+    }
+
+    /* SPONSOR LOGO STİLLERİ */
+    .sponsor-logo-container {
+      display: flex;
+      align-items: center;
+    }
+    .sponsor-logo {
+      border-radius: 5px; /* Köşeleri yuvarlatma */
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progress-bar"></div>
+  <div class="container">
+    <h1>Ramazan Ayında Mide Yanmasının Önüne Geçin</h1>
+    <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0 24px 0;">
+      <div style="max-width: 120px; max-height: 50px; display: flex; align-items: center;">
+        <img src="https://static.bundle.app/studio/25351e41-41cc-472d-b1cd-2ef223e2f905/3ed30955-39fa-4f8b-9d34-92db774fc4ed.png" alt="Gavidigest Logo" class="sponsor-logo">
+      </div>
+      <span style="font-size: 0.88rem; color: #4b5563; font-weight: 500;">sponsorluğunda</span>
+    </div>
+
+    <p>Ramazan ayının yaklaşmasıyla birlikte milyonlarca kişi birbirinden lezzetli iftar sofralarında bir araya gelmeyi iple çekiyor. Ancak, bu özel ayda alıştığımız rutinlerin dışına çıktığımız için yeme içmeye özellikle dikkat etmek ve sindirim sistemimizin sağlığına özen göstermek de önem teşkil ediyor.</p>
+
+    <div class="image-block">
+      <img src="https://static.bundle.app/studio/58858c0b-9453-47a3-8a20-43df4d45e3a8/8660eff1-ff14-4712-9595-5c956cda206e.png" alt="Ramazan'da İftar Sofrası">
+      <div class="caption">Ramazan sofraları ne kadar çekici olsa da ölçülü olmak önemlidir.</div>
+    </div>
+
+    <p>Hepimizin tahmin ettiği üzere özellikle oruç tutanlar için, gün boyunca açlık ve susuzluk hissiyle başa çıkmak oldukça zor. Ramazan boyunca iftar ve sahur öğünlerinde dengeli beslenmeye özen göstermemiz gerektiği de bilinen bir gerçek. Bunun yanında iftarda yavaş yiyerek sindirim sürecini desteklememiz de gerekiyor. Peki eğer hassas bir midemiz varsa ve sorun yaşıyorsak, Ramazan ayında nelere dikkat etmek gerekiyor?</p>
+
+    <h2>Mide yanmasının sebebi yediklerimiz mi?</h2>
+    <p>Fiziksel ve ruhsal olarak bizi rahatsız eden mide yanması probleminde öncelikle günlük rutinlerimizi gözden geçirmemiz gerekiyor. Mide yanması sebepleri arasında yer alan bazı alışkanlıklarımızla birlikte tükettiğimiz yiyecekler konusunda seçici olmak bu sorunu yaşamamızı önleyebilir.</p>
+    <p>Yemeklerden sonra yaşanan mide yanması, ağzımızda acı ve asitli bir tat olarak kendini gösterir. Eğildiğimizde veya uzandığımızda artan bu durum, midemizden gelen bu asit, yemek borumuzda tahrişe sebep olur.</p>
+
+    <div class="image-block">
+      <img src="https://static.bundle.app/studio/58858c0b-9453-47a3-8a20-43df4d45e3a8/a813c6e5-b5b2-4226-8657-92edb0d657b4.png" alt="Mide Yanmasına Neden Olabilecek Yiyecekler">
+      <div class="caption">Baharatlı, asitli ve yağlı yiyecekler mide yanmasını tetikleyebilir.</div>
+    </div>
+
+    <p>Yemekten sonra mide yanması sorunu yaşıyorsak, yediğimiz yiyecekler midemizdeki asit üretimini artırıyor demektir. Bu durumda alacağımız önlemler arasında sık sık ve az yemek, mide asiditesini artıracak yiyecek ve içeceklerden uzak durmak bulunabilir.</p>
+    <p>İftar sofralarında ya da sahura kalktığımızda mide yanması yaşamamamız için domates ve domates içerikli ketçap gibi katkılı ürünler, portakal, mandalina gibi narenciyeler, baharatlı gıdalar yemekten de kaçınmalıyız. Ayrıca gazlı içecekler de mide yanması sorunu yaşamamıza neden olabilir.</p>
+    <p>Sigara kullanımının da mide yanması şikayetlerinde etkili olduğu bilinmektedir. Sigara bağımlılığından kurtulmak, mide yanması sorununun önüne geçmek için atılacak önemli adımlardan biridir. Mide yanmasını önlemek için kahve tüketimimizi de makul bir seviyede tutmak gerekebilir.</p>
+
+    <div class="survey-container" id="mealSurvey">
+      <div class="survey-sponsor">
+        <img src="https://static.bundle.app/studio/25351e41-41cc-472d-b1cd-2ef223e2f905/3ed30955-39fa-4f8b-9d34-92db774fc4ed.png" alt="Gavidigest Logosu">
+      </div>
+      <h3>Anket: Mide Dostu Ramazan Öğünü</h3>
+      <p class="survey-question">Sence hangisi daha mide dostu bir Ramazan öğünü seçeneğidir?</p>
+      <ul class="survey-options">
+        <li><button type="button" data-option="heavy">Ağır şerbetli tatlılar ve bol baharatlı bir ana yemek.</button></li>
+        <li><button type="button" data-option="light" data-correct="true">Izgara tavuk/balık, bol yeşillikli salata ve yanında bir kase çorba.</button></li>
+        <li><button type="button" data-option="sahur_bad">Sahurda sadece sucuklu yumurta ve beyaz ekmek.</button></li>
+        <li><button type="button" data-option="iftar_bad">İftarda büyük bir porsiyon kızartma ve gazlı içecek.</button></li>
+      </ul>
+      <div class="survey-feedback-message" id="surveyFeedbackText" style="display: none;"></div>
+    </div>
+
+    <h2>Nasıl geçer bu mide yanması?</h2>
+    <p><span id="dynamicAdvertorialIntro">Ramazan ayında mide sağlığını korumak, ibadetlerinizi daha huzurlu geçirmenize yardımcı olur.</span> Mide sorunlarının önüne geçmek için beslenmeye dikkat etmek kadar yaşam alışkanlıklarını gözden geçirmek de önemlidir. Öncelikle düzenli bir uyku, yemek saatleri ve fiziksel aktivite gibi başlıklar sıralanabilir. Ek olarak; gece yatmadan önce bir süre midemizin dinlenmesine izin vermek de mide yanması sorunu yaşamayı önleyebilir. Sigara kullanmamak, ağır yağlı ve baharatlı gıdalar tüketmemek, yoğun çalışma temposu içerisinde stresi azaltacak etkinlikler yapmak da mide yanmasına ne iyi gelir sorusuna verilecek yanıtlar arasında sıralanabilir.</p>
+
+    <div class="image-block carousel" id="foodCarousel">
+      <div class="carousel-inner">
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1528825871115-3581a5387919?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFuYW5hfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60" alt="Muz">
+          <div class="caption"><strong>Muz ve Kavun:</strong> Muz, lifleriyle mideyi korur. Kavun ise kolay sindirilir ve mide asidini dengeleyebilir.</div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z3JlZW4lMjB2ZWdldGFibGVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60" alt="Yeşil Sebzeler">
+          <div class="caption"><strong>Yeşil Sebzeler:</strong> Yeşil fasulye, kereviz gibi düşük asitli sebzeler mide yanması yaşayanlar için önerilir.</div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1603400449484-9991c1058584?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Ym9pbGVkJTIwcG90YXRvfGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60" alt="Haşlanmış Patates ve Pirinç">
+          <div class="caption"><strong>Patates ve Pirinç:</strong> Haşlanmış patates ve pirinç, içerdikleri nişasta ile mideye iyi gelebilir.</div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1559491012-203410597265?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8a2VmaXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60" alt="Kefir">
+          <div class="caption"><strong>Kefir:</strong> Sindirim sistemine dost kefir, mide yanması sorununa karşı da önerilen bir içecektir.</div>
+        </div>
+         <div class="carousel-slide">
+          <img src="https://static.bundle.app/studio/58858c0b-9453-47a3-8a20-43df4d45e3a8/a5623f2d-f637-42a9-96f3-475c8aa71ffd.png" alt="Gavidigest Ürünü">
+          <div class="caption"><strong>Ek Bilgi:</strong> Lifli yiyecekler tok tutar, düşük pH'lı alkali besinler mide asidini dengeler, su içeren gıdalar ise asidi seyreltir.</div>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="prev" aria-label="Önceki slayt">←</button>
+        <button class="next" aria-label="Sonraki slayt">→</button>
+      </div>
+      <div class="carousel-dots"></div>
+    </div>
+
+    <p>Bununla birlikte şu besinler de mide yanması ile karşılaştığınızda size yardımcı olacaktır:</p>
+     <ul>
+      <li>Lifli yiyecekler bizi tok hissettirir. Bu durum da bir anda yemek yemenin önüne geçebilir ve mide şikayetinin azalmasına da katkıda bulunabilir.</li>
+      <li>Düşük pH'a sahip olan besinlerin asidik olmaları reflüye neden olma olasılıklarını yükseltir. Daha yüksek pH'a sahip olanlar ise alkalidir ve güçlü mide asidinin dengelenmesine yardımcı olabilir.</li>
+      <li>Su içeren besinler mide asidini seyreltebilir ve zayıflatabilir. Bu nedenle mide yanmasını engellemek için bolca tüketilebilir.</li>
+    </ul>
+
+    <div class="image-block">
+      <img src="https://static.bundle.app/studio/25351e41-41cc-472d-b1cd-2ef223e2f905/7d59e353-cb50-4451-ac15-b716225cb044.jpg" alt="Gavidigest Advertorial Görseli">
+      <div class="caption">Ramazan'da mide rahatlığı için Gavidigest yanınızda.</div>
+    </div>
+
+    <h2>Yazı sponsorumuz Gavidigest’ten!</h2>
+    <p>Yemek yerken keyfiniz kaçmasın. Gavidigest de içerisindeki <strong class="highlighted-benefit">kalsiyum</strong> sayesinde <strong class="highlighted-benefit">sindirim enzimlerinin normal fonksiyonuna katkıda bulunur</strong>. Deneyen her 10 kişiden 8’inin* beğenisini kazanan Gavidigest, <strong class="highlighted-benefit">ferahlatıcı nane aroması</strong> ve <strong class="highlighted-benefit">kolay taşınabilir pastil formatı</strong> sayesinde her an yanımızda. Gavid
